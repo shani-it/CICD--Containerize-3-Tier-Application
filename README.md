@@ -1,167 +1,85 @@
-\# Literary Lounge
+# Cloud DevOps CI/CD Pipeline Using Terraform, AWS, Jenkins, Docker & GitHub
 
+## Project Overview
 
+This project demonstrates an automated cloud-based DevOps CI/CD pipeline using Infrastructure as Code (IaC), Continuous Integration, Continuous Deployment, and containerization technologies.
 
-A full-stack online bookstore built with React, Node.js, Express.js, and MySQL.
+The main objective is to automate cloud infrastructure provisioning and application deployment while reducing manual operations.
 
+## Architecture Workflow
 
+### 1. Infrastructure Provisioning – Terraform
+Terraform is used to provision AWS cloud infrastructure through Infrastructure as Code (IaC).
 
-\## Overview
+- Create AWS EC2 instances.
+- Configure required security groups and networking rules.
+- Maintain infrastructure configuration through Terraform files.
+- Automate and manage infrastructure provisioning.
 
+### 2. Source Code Management – GitHub
+GitHub is used to store and manage application source code. Developers push their code changes to the repository.
 
+### 3. CI/CD Automation – Jenkins
+Jenkins runs on a dedicated AWS EC2 instance and manages the CI/CD pipeline.
 
-Literary Lounge is an online bookstore where users can browse books, search for titles, manage their cart, place orders, and leave reviews and ratings. The application also includes an admin panel for managing books, categories, inventory, users, orders, reviews, returns, and shipping.
+- Fetch source code from GitHub.
+- Build and test the application.
+- Prepare Docker images.
+- Establish a secure SSH connection with the App Host.
+- Deploy the application.
 
+### 4. Secure Deployment – SSH
+Jenkins communicates with the second AWS EC2 instance (App Host) through an SSH connection to perform deployment operations securely.
 
+### 5. Application Containerization – Docker
+The application is divided into three independent Docker containers:
 
-\## Features
+- **React Frontend (Nginx):** Provides the user interface and serves frontend content.
+- **Node.js Backend:** Handles business logic and API requests.
+- **MongoDB Database:** Stores and manages application data.
 
+Each service runs in its own isolated container.
 
+## Technologies Used
 
-\### User Features
+| Technology | Purpose |
+|---|---|
+| Terraform | Infrastructure as Code |
+| AWS EC2 | Cloud Servers |
+| GitHub | Source Code Management |
+| Jenkins | CI/CD Automation |
+| SSH | Secure Remote Deployment |
+| Docker | Containerization |
+| React | Frontend Development |
+| Nginx | Frontend Web Server |
+| Node.js | Backend Development |
+| MongoDB | Database Management |
 
+## Key Learning Objectives
 
+- Understanding Infrastructure as Code (IaC).
+- Provisioning AWS infrastructure using Terraform.
+- Implementing CI/CD pipelines using Jenkins.
+- Automating application deployment through SSH.
+- Containerizing multi-tier applications using Docker.
+- Understanding communication between frontend, backend, and database containers.
+- Deploying applications on AWS EC2 infrastructure.
 
-\- User registration and login
+## Project Outcome
 
-\- Account validation
+A cloud-based DevOps deployment architecture in which Terraform manages infrastructure provisioning, Jenkins automates the CI/CD workflow, and Docker runs the frontend, backend, and database services on AWS EC2.
 
-\- Book browsing and search
+This project provides practical experience with modern DevOps tools and cloud infrastructure management.
+Pipeline Flow & Execution
+Code Commit: Code is pushed to the main branch on GitHub.
 
-\- Product details
+Pipeline Trigger: Jenkins fetches the latest code and reads the Jenkinsfile.
 
-\- Wishlist
+SSH Deployment: Jenkins securely connects to the App Server (172.31.30.206) using SSH Key authentication.
 
-\- Shopping cart
+Container Orchestration: Docker Compose rebuilds and restarts the 3 containers (literary-frontend, literary-backend, literary-db).
+Live Access Ports
+Frontend App: http://<APP_SERVER_PUBLIC_IP>:8080
 
-\- Order placement and order history
+Backend API: http://<APP_SERVER_PUBLIC_IP>:4000
 
-\- Saved addresses
-
-\- Reviews and ratings
-
-\- User profile management
-
-
-
-\### Admin Features
-
-
-
-\- Add, update, and delete books
-
-\- Manage book categories
-
-\- Manage inventory
-
-\- Manage users
-
-\- Manage orders and order status
-
-\- Manage reviews
-
-\- Manage returns and shipping
-
-\- View sales and revenue information
-
-
-
-\## Tech Stack
-
-
-
-\### Frontend
-
-\- React
-
-\- JavaScript
-
-\- HTML
-
-\- CSS
-
-
-
-\### Backend
-
-\- Node.js
-
-\- Express.js
-
-\- REST APIs
-
-
-
-\### Database
-
-\- MySQL
-
-
-
-\## Project Structure
-
-
-
-```text
-
-Literary-Lounge/
-
-├── admin/       # Admin panel
-
-├── client/      # React frontend
-
-├── server/      # Node.js/Express backend
-
-└── Software Requirements Specification.pdf
-
-
-
-Architecture
-
-
-
-The React frontend communicates with the Node.js and Express.js backend through REST APIs. The backend handles application logic, authentication, authorization, and database operations using MySQL.
-
-
-
-Getting Started
-
-
-
-Clone the repository:
-
-
-
-git clone https://github.com/VivekSingh571/Literary-Lounge.git
-
-
-
-Install dependencies in the required project directories:
-
-
-
-cd client
-
-npm install
-
-cd ../admin
-
-npm install
-
-cd ../server
-
-npm install
-
-
-
-Start the frontend, admin panel, and backend using the scripts defined in their respective package.json files.
-
-
-
-##Notes
-
-
-
-This project was developed as an individual academic project.
-
-The repository was originally maintained under a different GitHub account and later moved to this account for portfolio purposes.
