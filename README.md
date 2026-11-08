@@ -1,6 +1,6 @@
 ## Architecture Workflow
 
-![Cloud DevOps CI/CD Pipeline Architecture](assets/Cloud%20DevOps%20CI_CD%20Pipeline%20Diagram.png)
+![Cloud DevOps CI/CD Pipeline Architecture](Cloud%20DevOps%20CI_CD%20Pipeline%20Diagram.png)
 # Cloud DevOps CI/CD Pipeline Using Terraform, AWS, Jenkins, Docker & GitHub
 
 ## Project Overview
