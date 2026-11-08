@@ -1,122 +1,97 @@
-resource "aws_key_pair" "deployer_key" {
-  key_name   = "devops-project-key"
-  public_key = file(pathexpand("~/.ssh/id_rsa.pub"))
-}
-
-resource "aws_security_group" "jenkins_sg" {
-  name        = "jenkins-sg"
-  description = "Security group for Jenkins Server"
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
   }
 }
 
-resource "aws_security_group" "app_sg" {
-  name        = "app-sg"
-  description = "Security group for App Server"
+provider "aws" {
+  region = "us-east-1" # Apni region adjust kar sakte hain
+}
+e
+data "aws_vpc" "default" {
+  default = true
+}
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_security_group" "web_sg" {
+  name        = "custom-ports-sg"
+  description = "Allow HTTP, SSH, 8080, 2701, and 4000"
+  vpc_id      = data.aws_vpc.default.id
 
+  # Port 80 (HTTP)
   ingress {
+    description = "HTTP"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Port 8080 (Web App / Alt HTTP)
   ingress {
-    from_port   = 3000
-    to_port     = 3000
+    description = "Custom Port 8080"
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Port 22 (SSH)
+  ingress {
+    description = "SSH Access"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Port 2701
+  ingress {
+    description = "Custom Port 2701"
+    from_port   = 2701
+    to_port     = 2701
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Port 4000
+  ingress {
+    description = "Custom Port 4000"
+    from_port   = 4000
+    to_port     = 4000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Outbound Traffic
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
-
-resource "aws_instance" "jenkins_server" {
-  ami                    = "ami-0c7217cdde317cfec"
-  instance_type          = "t2.micro"
-  key_name               = aws_key_pair.deployer_key.key_name
-  vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
-
-  user_data = <<-EOF
-              #!/bin/bash
-              sudo fallocate -l 2G /swapfile
-              sudo chmod 600 /swapfile
-              sudo mkswap /swapfile
-              sudo swapon /swapfile
-              echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab
-
-              sudo apt-get update -y
-              sudo apt-get install -y openjdk-17-jre docker.io curl wget
-              sudo systemctl enable --now docker
-              sudo usermod -aG docker ubuntu
-
-              sudo mkdir -p /usr/share/keyrings
-              curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo gpg --dearmor -o /usr/share/keyrings/jenkins-keyring.gpg
-              echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-              sudo apt-get update -y
-              sudo apt-get install -y jenkins
-              sudo usermod -aG docker jenkins
-              sudo systemctl enable --now jenkins
-              sudo systemctl restart jenkins
-              EOF
 
   tags = {
-    Name = "Jenkins-CI-CD-Server"
+    Name = "allow-custom-ports"
   }
 }
 
-resource "aws_instance" "app_server" {
-  ami                    = "ami-0c7217cdde317cfec"
-  instance_type          = "t2.micro"
-  key_name               = aws_key_pair.deployer_key.key_name
-  vpc_security_group_ids = [aws_security_group.app_sg.id]
+# 2. EC2 Instances (2 Servers create honge)
+resource "aws_instance" "Jenkins Server" {
+  count         = 2
+  ami           = "ami-0c7217cdde317cfec" #  2S
+  instance_type = "t2.micro"
 
-  user_data = <<-EOF
-              #!/bin/bash
-              sudo fallocate -l 2G /swapfile
-              sudo chmod 600 /swapfile
-              sudo mkswap /swapfile
-              sudo swapon /swapfile
-              echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab
-
-              sudo apt-get update -y
-              sudo apt-get install -y docker.io docker-compose
-              sudo systemctl enable --now docker
-              sudo usermod -aG docker ubuntu
-              EOF
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
 
   tags = {
-    Name = "3Tier-App-Server"
+    Name = "Server-${count.index + 1}"
   }
+}
+
+# Both Servers ke Public IPs Output
+output "server_public_ips" {
+  value = aws_instance.my_servers[*].public_ip
 }
