@@ -34,9 +34,57 @@ services:
     depends_on:
       - literary-backend
 
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    networks:
+      - literary-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        cat <<EOF > /etc/prometheus/prometheus.yml
+        global:
+          scrape_interval: 15s
+        scrape_configs:
+          - job_name: 'app-server'
+            static_configs:
+              - targets: ['node-exporter:9100']
+        EOF
+        /bin/prometheus --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - literary-network
+    depends_on:
+      - node-exporter
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - literary-network
+    depends_on:
+      - prometheus
+
 networks:
   literary-network:
     driver: bridge
 
 volumes:
   mongo_data:
+  grafana_data:
