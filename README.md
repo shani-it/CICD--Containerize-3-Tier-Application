@@ -1,3 +1,5 @@
+![Uploading Cloud DevOps CI_CD Pipeline Infographic.png…]()
+
 # 🚀 End-to-End DevOps CI/CD Pipeline with AWS, Terraform, Jenkins, Docker, Prometheus & Grafana
 
 ## 📌 Project Overview
@@ -7,12 +9,6 @@ This project demonstrates an end-to-end DevOps workflow for deploying and monito
 The infrastructure is provisioned using **Terraform**, the CI/CD pipeline is automated through **Jenkins**, and the application services are deployed using **Docker and Docker Compose**. **Prometheus** collects real-time system and container metrics, while **Grafana** provides interactive dashboards for monitoring resource utilization and application infrastructure.
 
 The project aims to minimize manual deployment tasks, improve deployment consistency, and provide visibility into the application's running environment.
-
----
-
-## 🏗️ Architecture
-
-![Cloud DevOps CI/CD Pipeline Architecture](Cloud%20DevOps%20CI_CD%20Pipeline%20Diagram.png)
 
 ### Architecture Components
 
