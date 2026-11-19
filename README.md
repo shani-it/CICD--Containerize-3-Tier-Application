@@ -1,4 +1,4 @@
-![Uploading Cloud DevOps CI_CD Pipeline Infographic.png…]()
+![Architecture Diagram](./Cloud%20DevOps%20CI_CD%20Pipeline%20Infographic.png)
 
 # 🚀 End-to-End DevOps CI/CD Pipeline with AWS, Terraform, Jenkins, Docker, Prometheus & Grafana
 
